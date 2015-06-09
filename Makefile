@@ -87,5 +87,5 @@ $(BUILD_DIR):
 	mkdir -p $@
 
 clean:
-	-rm $(BUILD_DIR)/*.o
-	-rm $(BUILD_DIR)/*.elf
+	@rm $(BUILD_DIR)/*.o
+	@rm $(BUILD_DIR)/*.elf
