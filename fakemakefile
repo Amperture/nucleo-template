@@ -1,5 +1,0 @@
- rm main.elf main.hex main.o  
-arm-none-eabi-gcc -Wall -mcpu=cortex-mf -mlittle-endian -mthumb -I/home/alex/src/stm32/cubef4/STM32Cube_FW_F4_V1.5.0/Drivers/CMSIS/Device/ST/STM32F4xx/Include -I/home/alex/src/stm32/cubef4/STM32Cube_FW_F4_V1.5.0/Drivers/CMSIS/Include -DSTM32F401xE -Os -c main.c -o main.o
-NOTE: make sure to do the above line for all .c files!
- arm-none-eabi-gcc -mcpu=cortex-m4 -mlittle-endian -mthumb -DSTM32F401xE -Tsystem/STM32F401CE_FLASH.ld -Wl,--gc-sections system.o main.o startup_stm32f401xe.o -o main.elf
-arm-none-eabi-objcopy -Oihex main.elf main.hex
