@@ -36,7 +36,7 @@ int main() {
 
         while(1){
             //The most janked up delay function you ever did see.
-            for(index = 0; index < 50000000; index++){
+            for(index = 0; index < 5000000; index++){
             }
             
             //Toggle the LED on or off.

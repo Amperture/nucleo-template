@@ -19,7 +19,7 @@ GDB = $(TOOLPREFIX)gdb
 # ########################
 # Project Info
 # ########################
-SOURCES = main.c startup_stm32f401xe.c system.c
+SOURCES =  system.c main.c 
 TARGET = main
 BUILD_DIR = build
 LD_SCRIPT = ./system/STM32F401CE_FLASH.ld
@@ -52,12 +52,13 @@ CORE += -mthumb
 # External DEFINES
 # ########################
 DEFS = -DSTM32F401xE $(USER_DEFS)
+LIBS = -lc -lm -lnosys
 
 
 # ########################
 # Compiler Flags
 # ########################
-CFLAGS = $(DEFS) $(INCLUDE) $(CORE) $(USER_CFLAGS)
+CFLAGS = $(DEFS) $(INCLUDE) $(CORE) $(USER_CFLAGS) $(LIBS)
 
 # ########################
 # Compiler Build Rules 
@@ -72,8 +73,7 @@ OBJECTS += $(BUILD_DIR)/startup_stm32f401xe.o
 all: $(BUILD_DIR)/$(TARGET).elf
 
 $(BUILD_DIR)/$(TARGET).elf: $(OBJECTS)
-	$(CC) -o $@ $(CFLAGS) $(OBJECTS) \
-		-T$(LD_SCRIPT)
+	$(CC) -o $@ $(CFLAGS) $(OBJECTS) -T$(LD_SCRIPT)
 		
 	size $@
 
@@ -89,4 +89,3 @@ $(BUILD_DIR):
 clean:
 	-rm $(BUILD_DIR)/*.o
 	-rm $(BUILD_DIR)/*.elf
-	-rm $(BUILD_DIR)/*.map
