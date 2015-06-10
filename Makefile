@@ -1,4 +1,4 @@
-# STM32 Nucleo F4 Makefile
+# STM32 Nucleo F401RE Makefile
 # ########################
 #
 # Written by Amperture Engineering
