@@ -86,6 +86,9 @@ $(BUILD_DIR)/%.o: src/%.s | $(BUILD_DIR)
 $(BUILD_DIR):
 	mkdir -p $@
 
+debug: $(BUILD_DIR)/$(TARGET).elf
+	$(GDB) $(BUILD_DIR)/$(TARGET).elf -x gdbinit
+
 clean:
 	@rm $(BUILD_DIR)/*.o
 	@rm $(BUILD_DIR)/*.elf
