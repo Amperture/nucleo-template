@@ -1,45 +1,53 @@
 /*
- * *
- * * Copyright (C) Patryk Jaworski <regalis@regalis.com.pl>
- * *
- * * This program is free software: you can redistribute it and/or modify
- * * it under the terms of the GNU General Public License as published by
- * * the Free Software Foundation, either version 3 of the License, or
- * * (at your option) any later version.
- * *
- * * This program is distributed in the hope that it will be useful,
- * * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * * GNU General Public License for more details.
- * *
- * * You should have received a copy of the GNU General Public License
- * * along with this program. If not, see <http://www.gnu.org/licenses/>.
- * *
- * */
+ * ===========================================================================
+ *
+ *       Filename:  main.c
+ *
+ *    Description:  A simple beginner project to get to a blinking light
+ *                  on an STM32F401 Nucleo Board 
+ *
+ *        Version:  1.0
+ *        Created:  06/14/2015 06:08:55 AM
+ *       Revision:  none
+ *       Compiler:  arm-none-eabi-gcc
+ *
+ *         Author:  W. Alex Best (mn), alexbest@alexbest.me
+ *        Company:  Amperture Engineering
+ *
+ * ===========================================================================
+ */
+
 #include <stm32f4xx.h>
- 
+
+#define DELAY 10000
 #define LED_PIN 5
-#define LED_ON() GPIOA->BSRR |= (1 << 5)
-#define LED_OFF() GPIOA->BSRR |= (1 << 21)
- 
+#define LED_SPEED 3
+
+void delay(){
+   uint32_t i = 0;
+
+   while (i < DELAY){
+       i++;
+   }
+
+}
+
 int main() {
-        uint32_t index;
 
-        /* Enbale GPIOA clock */
-        RCC->AHB1ENR |= RCC_AHB1ENR_GPIOAEN;
+    // Enable GPIOA system clock in RCC.
+    // See page 118 of the STM32F401RE Reference Manual from ST
+    RCC->AHB1ENR |= (1 << 0);
 
-        /* Configure GPIOA pin 5 as output */
-        GPIOA->MODER |= (1 << (LED_PIN << 1));
+    //GPIO Init: Pin Mode
+    //1 = Output
+    GPIOA->MODER |= (1 << 2*LED_PIN);
 
-        /* Configure GPIOA pin 5 in max speed */
-        GPIOA->OSPEEDR |= (3 << (LED_PIN << 1));
+    //GPIO Init: Pin Speed
+    GPIOA->OSPEEDR |= (LED_SPEED << 2*LED_PIN);
 
-        while(1){
-            //The most janked up delay function you ever did see.
-            for(index = 0; index < 5000000; index++){
-            }
-            
-            //Toggle the LED on or off.
-            GPIOA->ODR ^= (1 << 5);
-        }
+    while(1){
+        GPIOA->ODR ^= (1 << LED_PIN);
+        delay();
+    } 
+    
 }
