@@ -19,7 +19,7 @@ GDB = $(TOOLPREFIX)gdb
 # ########################
 # Project Info
 # ########################
-SOURCES =  system.c main.c 
+SOURCES = system_stm32f4xx.c main.c 
 TARGET = main
 BUILD_DIR = build
 LD_SCRIPT = ./system/STM32F401CE_FLASH.ld
@@ -88,6 +88,9 @@ $(BUILD_DIR):
 
 debug: $(BUILD_DIR)/$(TARGET).elf
 	$(GDB) $(BUILD_DIR)/$(TARGET).elf -x gdbinit
+
+flash: $(BUILD_DIR)/$(TARGET).elf
+	openocd -f board/st_nucleo_f401re.cfg -c "program build/main.elf verify reset"
 
 clean:
 	@rm $(BUILD_DIR)/*.o
