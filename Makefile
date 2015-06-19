@@ -86,6 +86,9 @@ $(BUILD_DIR)/%.o: src/%.s | $(BUILD_DIR)
 $(BUILD_DIR):
 	mkdir -p $@
 
+ocd:
+	openocd -f board/st_nucleo_f401re.cfg &
+
 debug: $(BUILD_DIR)/$(TARGET).elf
 	$(GDB) $(BUILD_DIR)/$(TARGET).elf -x gdbinit
 
