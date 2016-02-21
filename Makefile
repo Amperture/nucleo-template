@@ -2,6 +2,10 @@
 # ############################
 # Written by Amperture Engineering
 # http://www.amperture.com
+#
+# With heavy inspiration and contribution from:
+# 	-UCTools Project (http://uctools.github.io)
+# 	-Iztok Starc (@iztokstarc)
 # ###########################
 
 # ########################
@@ -62,7 +66,7 @@ LD_SCRIPT = ./system/STM32F401CE_FLASH.ld
 LDFLAGS = -T $(LD_SCRIPT) --specs=nosys.specs $(MCU_FLAGS)
 
 ###
-# Optimizations
+# Optimizations (Taken from @iztokstark)
 OPT?='O1 O2 O3 O4 O6 O7' # O5 disabled by default, because it breaks code
 
 ifneq ($(filter O1,$(OPT)),)
