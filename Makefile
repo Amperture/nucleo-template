@@ -69,6 +69,7 @@ LDFLAGS = -T $(LD_SCRIPT) --specs=nosys.specs $(MCU_FLAGS)
 # Optimizations (Taken from @iztokstark)
 OPT?='O1 O2 O3 O4 O6 O7' # O5 disabled by default, because it breaks code
 
+ifneq ($(findstring memopt,$(MAKECMDGOALS)),)
 ifneq ($(filter O1,$(OPT)),)
 CXXFLAGS+=-fno-exceptions # Uncomment to disable exception handling
 DEFS+=-DNO_EXCEPTIONS # The source code has to comply with this rule
@@ -104,6 +105,7 @@ endif
 ifneq ($(findstring O7,$(OPT)),)
 LDFLAGS+=--specs=nano.specs # Use size optimized newlib
 endif
+endif
 
 ###
 
@@ -112,7 +114,15 @@ endif
 # #########################
 .PHONY: all debug clean ocd debug flash
 
-all: $(BUILD_DIR)/$(BUILD_HEX)
+all: release
+	
+release: $(BUILD_DIR)/$(BUILD_HEX)
+
+memopt: release
+
+debugflag: CFLAGS+=-g
+debugflag: LDFLAGS+=-g
+debugflag: release
 
 $(BUILD_DIR)/$(BUILD_HEX): $(BUILD_DIR)/$(BUILD_ELF)
 	@$(CP) -O ihex $< $@
@@ -121,7 +131,7 @@ $(BUILD_DIR)/$(BUILD_HEX): $(BUILD_DIR)/$(BUILD_ELF)
 
 $(BUILD_DIR)/$(BUILD_ELF): $(OBJECTS)
 	@$(CC) $(LDFLAGS) $(OBJECTS) -o $@
-	@echo "Linking complete!"
+	@echo "[LD] $(notdir $<)"
 	@$(SIZE) $(BUILD_DIR)/$(BUILD_ELF)
 
 %.o: %.c
