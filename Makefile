@@ -19,6 +19,7 @@ CP = $(TOOLPREFIX)objcopy
 OD = $(TOOLPREFIX)objdump
 SIZE = $(TOOLPREFIX)size
 GDB = $(TOOLPREFIX)gdb
+MKDIR = mkdir -p
 
 # ########################
 # Project Info
@@ -29,6 +30,7 @@ TARGET = main
  
 # Architecture/Family used, will usually be something like STM32F4XX
 STM32_ARCHITECTURE = STM32F4XX
+STM32_CMSIS_DEVICE = STM32F4xx
 STM32_FAMILY = STM32F401xx
 
 # OpenOCD script for flashing
@@ -44,10 +46,22 @@ INCLUDE_DIR = inc
 INC_FILES=$(shell find -L . -name '*.h' -exec dirname {} \; | uniq)
 INCLUDES = $(INC_FILES:%=-I%)
 
+# StdPeriph/CMSIS directory
+PERIPHLIB_PATH = ../STM32F4xx_DSP_StdPeriph_Lib_V1.7.1
+CMSIS_PATH = $(PERIPHLIB_PATH)/Libraries/CMSIS
+DEVICE_PATH = $(CMSIS_PATH)/Device/ST/$(STM32_CMSIS_DEVICE)
+DRIVER_PATH = $(PERIPHLIB_PATH)/Libraries/$(STM32_CMSIS_DEVICE)_StdPeriph_Driver
+SOURCES_DRIVERS = $(shell find -L $(DRIVER_PATH)/src -name '*.c')
+INCLUDES += -I$(CMSIS_PATH)/Include
+INCLUDES += -I$(DEVICE_PATH)/Include
+INCLUDES += -I$(DRIVER_PATH)/inc
+INCLUDES += -I$(PERIPHLIB_PATH)/Project/STM32F4xx_StdPeriph_Templates
+
 # Building Object List
 BUILD_DIR = build
 OBJECTS = $(SOURCES_S:%.s=%.o)
 OBJECTS += $(SOURCES_C:%.c=%.o)
+OBJECTS += $(SOURCES_DRIVERS:%.c=%.o)
 
 #Output Files
 BUILD_ELF = $(TARGET).elf
@@ -125,13 +139,13 @@ debugflag: LDFLAGS+=-g
 debugflag: release
 
 $(BUILD_DIR)/$(BUILD_HEX): $(BUILD_DIR)/$(BUILD_ELF)
+	@echo "[CP] $(notdir $<) --> $(notdir $@)"
 	@$(CP) -O ihex $< $@
-	@echo "Object Copied from ELF to IHEX successfully!\n"
-	@$(SIZE) $(BUILD_DIR)/$(BUILD_ELF)
+	@$(SIZE) $(BUILD_DIR)/$(BUILD_HEX)
 
-$(BUILD_DIR)/$(BUILD_ELF): $(OBJECTS)
+$(BUILD_DIR)/$(BUILD_ELF): $(OBJECTS) $(BUILD_DIR)
+	@echo "[LD] $(notdir $<) --> $(notdir $@)"
 	@$(CC) $(LDFLAGS) $(OBJECTS) -o $@
-	@echo "[LD] $(notdir $<)"
 	@$(SIZE) $(BUILD_DIR)/$(BUILD_ELF)
 
 %.o: %.c
@@ -141,6 +155,9 @@ $(BUILD_DIR)/$(BUILD_ELF): $(OBJECTS)
 %.o: %.s
 	@echo "[CC] $(notdir $<)"
 	@$(CC) $(CFLAGS) $< -o $@
+
+$(BUILD_DIR):
+	$(MKDIR) $@
 
 ocd:
 	openocd -f $(OPENOCD_SCRIPT) &
